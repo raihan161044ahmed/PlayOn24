@@ -101,7 +101,7 @@ namespace PlayOn24.Controllers
         public IActionResult InvoiceList(int? customerId)
         {
             List<Sale> sales;
-            using (SqlConnection conn = new SqlConnection("DefaultConnection"))
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Sales";
                 if (customerId != null)
