@@ -1,0 +1,36 @@
+﻿@model PlayOn24.Models.SaleViewModel
+
+@{
+    ViewBag.Title = "Sell Product";
+}
+
+<h2>Sell Product</h2>
+
+@using (Html.BeginForm("CreateSale", "Sale", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.CustomerID, "Select Customer")
+        @Html.DropDownListFor(m => m.CustomerID, new SelectList(Model.Customers, "CustomerID", "FullName"), "Select a Customer", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.CustomerID)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ProductID, "Select Product")
+        @Html.DropDownListFor(m => m.ProductID, new SelectList(Model.Products, "ProductID", "ProductName"), "Select a Product", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ProductID)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Quantity)
+        @Html.TextBoxFor(m => m.Quantity, new { @class = "form-control", type = "number", step = "1" })
+        @Html.ValidationMessageFor(m => m.Quantity)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Complete Sale</button>
+}
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

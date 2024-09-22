@@ -1,0 +1,43 @@
+﻿@model IEnumerable<PlayOn24.Models.InvoiceViewModel>
+
+@{
+    ViewBag.Title = "Invoices";
+}
+
+<h2>Invoices</h2>
+
+@using (Html.BeginForm("Index", "Invoice", FormMethod.Get))
+{
+    <div class="form-group">
+        @Html.Label("CustomerName", "Filter by Customer")
+        @Html.TextBox("CustomerName", ViewBag.CustomerName as string, new { @class = "form-control", placeholder = "Enter customer name" })
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Invoice Number</th>
+            <th>Customer Name</th>
+            <th>Date</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Model)
+        {
+            <tr>
+                <td>@invoice.InvoiceNumber</td>
+                <td>@invoice.CustomerName</td>
+                <td>@invoice.Date.ToShortDateString()</td>
+                <td>@invoice.TotalAmount</td>
+                <td>
+                    @Html.ActionLink("View", "Details", new { id = invoice.InvoiceID }, new { @class = "btn btn-info" }) |
+                    @Html.ActionLink("Download PDF", "DownloadPdf", new { id = invoice.InvoiceID }, new { @class = "btn btn-success" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
