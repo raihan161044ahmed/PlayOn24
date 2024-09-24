@@ -20,7 +20,7 @@ namespace PlayOn24.Controllers
             _db = db;
         }
 
-        public IActionResult SellProduct(int customerId, int productId, int quantity)
+        public IActionResult SellProduct(int customerId, int productId, int quantity, int sale)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -29,6 +29,7 @@ namespace PlayOn24.Controllers
                 cmd.Parameters.AddWithValue("@CustomerID", customerId);
                 cmd.Parameters.AddWithValue("@ProductID", productId);
                 cmd.Parameters.AddWithValue("@Quantity", quantity);
+                cmd.Parameters.AddWithValue("@Price", sale);
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
@@ -66,7 +67,7 @@ namespace PlayOn24.Controllers
                 string query = @"
             SELECT 
                 c.FirstName + ' ' + c.LastName AS CustomerName, 
-                p.Name AS ProductName, 
+                p.ProductName AS ProductName, 
                 s.Quantity, 
                 p.Price, 
                 (s.Quantity * p.Price) AS Total
@@ -98,41 +99,57 @@ namespace PlayOn24.Controllers
 
 
 
-        public IActionResult InvoiceList(int? customerId)
+        [HttpGet]
+        public IActionResult InvoiceList(string customerName = null)
         {
-            List<Sale> sales;
+            List<InvoiceViewModel> invoices;
+
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM Sales";
-                if (customerId != null)
+                string query = @"
+            SELECT s.SaleID, 
+                   c.FirstName + ' ' + c.LastName AS CustomerName, 
+                   p.ProductName AS ProductName, 
+                   s.Quantity, 
+                   s.TotalPrice 
+            FROM Sales s
+            INNER JOIN Customers c ON s.CustomerID = c.CustomerID
+            INNER JOIN Products p ON s.ProductID = p.ProductID";
+
+                // Add condition for filtering by customer name if provided
+                if (!string.IsNullOrEmpty(customerName))
                 {
-                    query += " WHERE CustomerID = @CustomerID";
+                    query += " WHERE c.FirstName + ' ' + c.LastName LIKE @CustomerName";
                 }
 
                 SqlCommand cmd = new SqlCommand(query, conn);
-                if (customerId != null)
+
+                // Add parameter only if filtering
+                if (!string.IsNullOrEmpty(customerName))
                 {
-                    cmd.Parameters.AddWithValue("@CustomerID", customerId);
+                    cmd.Parameters.AddWithValue("@CustomerName", "%" + customerName + "%");
                 }
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
-                sales = new List<Sale>();
+                invoices = new List<InvoiceViewModel>();
                 while (reader.Read())
                 {
-                    sales.Add(new Sale
+                    invoices.Add(new InvoiceViewModel
                     {
-                        SaleID = (int)reader["SaleID"],
-                        CustomerID = (int)reader["CustomerID"],
-                        ProductID = (int)reader["ProductID"],
-                        SaleDate = (DateTime)reader["SaleDate"],
+                        InvoiceID = (int)reader["SaleID"], // Adjust according to your table structure
+                        CustomerName = reader["CustomerName"].ToString(),
+                        ProductName = reader["ProductName"].ToString(),
                         Quantity = (int)reader["Quantity"],
-                        TotalPrice = (decimal)reader["TotalPrice"]
+                        TotalAmount = (decimal)reader["TotalPrice"]
                     });
                 }
             }
-            return View(sales);
+
+            ViewBag.CustomerName = customerName; // For the filter textbox
+            return View(invoices);
         }
+
 
 
 

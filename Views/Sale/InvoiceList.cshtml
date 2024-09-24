@@ -1,0 +1,52 @@
+﻿@model IEnumerable<PlayOn24.Models.InvoiceViewModel>
+
+@{
+    ViewBag.Title = "Invoices";
+}
+
+<h2>Invoices</h2>
+
+@using (Html.BeginForm("InvoiceList", "Sale", FormMethod.Get))
+{
+    <div class="form-group">
+        @Html.Label("CustomerName", "Filter by Customer")
+        @Html.TextBox("CustomerName", ViewBag.CustomerName as string, new { @class = "form-control", placeholder = "Enter customer name" })
+    </div>
+    <button type="submit" class="btn btn-primary">Filter</button>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="5" class="text-center">No invoices found.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var invoice in Model)
+            {
+                <tr>
+                    <td>@invoice.CustomerName</td>
+                    <td>@invoice.ProductName</td>
+                    <td>@invoice.Quantity</td>
+                    <td>@invoice.TotalAmount</td>
+                    <td>
+                        @Html.ActionLink("View", "Details", new { id = invoice.InvoiceID }, new { @class = "btn btn-info" }) |
+                        @Html.ActionLink("Download PDF", "DownloadPdf", new { id = invoice.InvoiceID }, new { @class = "btn btn-success" })
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

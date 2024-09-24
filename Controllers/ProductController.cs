@@ -16,17 +16,23 @@ namespace PlayOn24.Controllers
 
         public IActionResult CreateProduct(Product product)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            if (ModelState.IsValid) 
             {
-                SqlCommand cmd = new SqlCommand("CreateProduct", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Name", product.ProductName);
-                cmd.Parameters.AddWithValue("@Price", product.Price);
-                cmd.Parameters.AddWithValue("@Quantity", product.Quantity);
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    SqlCommand cmd = new SqlCommand("CreateProduct", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Name", product.ProductName);
+                    cmd.Parameters.AddWithValue("@Price", product.Price);
+                    cmd.Parameters.AddWithValue("@Quantity", product.Quantity);
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
             }
-            return RedirectToAction("Index");
+            return View(product);
         }
+
     }
 }

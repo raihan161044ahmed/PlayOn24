@@ -16,19 +16,25 @@ namespace PlayOn24.Controllers
 
         public IActionResult CreateCustomer(Customer customer)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            if (ModelState.IsValid)
             {
-                SqlCommand cmd = new SqlCommand("CreateCustomer", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@FirstName", customer.FirstName);
-                cmd.Parameters.AddWithValue("@LastName", customer.LastName);
-                cmd.Parameters.AddWithValue("@Email", customer.Email);
-                cmd.Parameters.AddWithValue("@Phone", customer.Phone);
-                cmd.Parameters.AddWithValue("@Address", customer.Address);
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    SqlCommand cmd = new SqlCommand("CreateCustomer", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@FirstName", customer.FirstName);
+                    cmd.Parameters.AddWithValue("@LastName", customer.LastName);
+                    cmd.Parameters.AddWithValue("@Email", customer.Email);
+                    cmd.Parameters.AddWithValue("@Phone", customer.Phone);
+                    cmd.Parameters.AddWithValue("@Address", customer.Address ?? (object)DBNull.Value); 
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
             }
-            return RedirectToAction("Index");
+            return View(customer);
         }
+
     }
 }

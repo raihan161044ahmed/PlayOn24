@@ -6,7 +6,7 @@
 
 <h2>Create Product</h2>
 
-@using (Html.BeginForm("Create", "Product", FormMethod.Post))
+@using (Html.BeginForm("CreateProduct", "Product", FormMethod.Post))
 {
     <div class="form-group">
         @Html.LabelFor(m => m.ProductName)
@@ -18,6 +18,12 @@
         @Html.LabelFor(m => m.Price)
         @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01" })
         @Html.ValidationMessageFor(m => m.Price)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Quantity)
+        @Html.TextBoxFor(m => m.Quantity, new { @class = "form-control", type = "number", min = "1" })
+        @Html.ValidationMessageFor(m => m.Quantity)
     </div>
 
     <button type="submit" class="btn btn-primary">Create Product</button>

@@ -27,6 +27,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=sale}/{action=InvoiceViewModels}");
+    pattern: "{controller=sale}/{action=InvoiceList}");
 
 app.Run();
